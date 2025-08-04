@@ -1,0 +1,61 @@
+/* Add to src/index.css or Sidebar.css */
+
+/* Layout for main + sidebar */
+.layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 2rem auto;
+  gap: 2rem;
+  align-items: flex-start;
+  padding: 0 1rem;
+}
+
+/* Main content area */
+main {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 300px;
+  background: #e8f5e9;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(56, 142, 60, 0.08);
+  padding: 1.5rem 1rem;
+  color: #263238;
+  font-size: 1rem;
+}
+
+.sidebar h3 {
+  color: #388e3c;
+  margin-bottom: 0.5em;
+  font-size: 1.2rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5em;
+}
+
+.sidebar li {
+  margin-bottom: 0.75em;
+}
+
+.sidebar a {
+  color: #388e3c;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    margin-top: 2rem;
+  }
+}
