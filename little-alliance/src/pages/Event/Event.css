@@ -104,3 +104,15 @@
     min-width: 0;
   }
 }
+
+.event-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.event-meta-row span {
+  min-width: 120px;
+  font-size: 1rem;
+}
