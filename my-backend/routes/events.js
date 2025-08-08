@@ -3,6 +3,7 @@ const Event = require('../models/Event');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
+
 // Middleware to check admin
 function requireAdmin(req, res, next) {
   const authHeader = req.header('Authorization');
@@ -19,6 +20,7 @@ function requireAdmin(req, res, next) {
     res.status(401).json({ message: 'Invalid token' });
   }
 }
+
 // CREATE an event (admin only)
 router.post('/', requireAdmin, async (req, res) => {
   const { name, description, location, date, time, fee, prize, results } = req.body;
@@ -46,7 +48,8 @@ router.get('/', async (req, res) => {
   try {
     const events = await Event.find()
       .populate('createdBy', 'name email')
-      .populate('registrations.user', '_id name email'); // <-- ADD THIS LINE
+      .populate('registrations.user', '_id name email');
+    
     res.json(events);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -56,7 +59,9 @@ router.get('/', async (req, res) => {
 // READ single event (public)
 router.get('/:id', async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate('createdBy', 'name email');
+    const event = await Event.findById(req.params.id)
+      .populate('createdBy', 'name email')
+      .populate('registrations.user', '_id name email');
     if (!event) return res.status(404).json({ message: 'Event not found' });
     res.json(event);
   } catch (err) {
@@ -131,7 +136,13 @@ router.post('/:id/register', requireAuth, async (req, res) => {
       email: req.user.email
     });
     await event.save();
-    res.json({ message: 'Registered successfully' });
+
+    // Populate registrations for the updated event
+    const populatedEvent = await Event.findById(event._id)
+      .populate('createdBy', 'name email')
+      .populate('registrations.user', '_id name email');
+
+    res.json({ message: 'Registered successfully', event: populatedEvent });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

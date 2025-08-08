@@ -16,8 +16,8 @@ html, body, #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* NO height: 100vh; */
 }
-
 
 body {
   min-height: 100vh;
@@ -58,7 +58,9 @@ main {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  /* NO height, NO min-height */
 }
+
 .sidebar {
   width: 300px;
   background: #e8f5e9;
@@ -70,6 +72,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  /* NO height, NO min-height */
 }
 
 /* Utility classes */
@@ -89,7 +92,8 @@ main {
   margin: 2rem auto;
   gap: 2rem;
   padding: 0 1rem;
-  align-items: stretch;
+  align-items: stretch;  /* This is the key! */
+  /* NO height, NO min-height */
 }
 
 /* Footer stays at the bottom */

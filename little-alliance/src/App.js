@@ -58,7 +58,7 @@ function App() {
               <Route path="/register" element={<Register />} />
             </Routes>
           </main>
-          <Sidebar />
+          <Sidebar user={user} />
         </div>
         <Footer />
       </Router>

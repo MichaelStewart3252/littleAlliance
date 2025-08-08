@@ -10,6 +10,7 @@ function Event({ user }) {
     fetch("http://localhost:5000/api/events")
       .then(res => res.json())
       .then(data => {
+        console.log("Fetched events:", data);
         setEvents(data);
         setLoading(false);
       })
@@ -19,22 +20,30 @@ function Event({ user }) {
   const handleRegister = async (eventId) => {
     setRegistering(eventId);
     const token = localStorage.getItem("token");
-    const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+    try {
+      const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+
+      if (!res.ok && data.message !== "Already registered") {
+        alert(data.message || "Registration failed");
       }
-    });
-    const data = await res.json();
 
-    // Always refetch events to update registration status
-    await fetch("http://localhost:5000/api/events")
-      .then(res => res.json())
-      .then(setEvents);
-
-    if (!res.ok && data.message !== "Already registered") {
-      alert(data.message || "Registration failed");
+      // Always refetch events to update registration status
+      await fetch("http://localhost:5000/api/events")
+        .then(res => res.json())
+        .then(data => {
+          console.log("Events after registration:", data);
+          setEvents(data);
+        });
+    } catch (err) {
+      alert("Registration failed (network error)");
+      console.error(err);
     }
     setRegistering(null);
   };
@@ -56,10 +65,22 @@ function Event({ user }) {
   return (
     <div className="events-list">
       {sortedEvents.map((event) => {
+        // Debug logs
+        console.log("Current user:", user);
+        console.log("Event registrations:", event.registrations);
+        event.registrations.forEach(r => {
+          const regUserId = r.user?._id || r.user;
+          const userId = user && (user._id || user.id);
+          console.log("Comparing regUserId", regUserId, "with userId", userId);
+        });
+
+        // Robust registration check
         const isRegistered = user && event.registrations && event.registrations.some(
-          r =>
-            (r.user && typeof r.user === "object" && (r.user._id === user._id || r.user._id === user.id)) ||
-            (typeof r.user === "string" && (r.user === user._id || r.user === user.id))
+          r => {
+            const regUserId = r.user?._id || r.user;
+            const userId = user._id || user.id;
+            return regUserId?.toString() === userId?.toString();
+          }
         );
 
         return (
@@ -78,7 +99,7 @@ function Event({ user }) {
                   {user ? (
                     isRegistered ? (
                       <button className="registered-btn" disabled>
-                        Registered!
+                        Registered
                       </button>
                     ) : (
                       <button

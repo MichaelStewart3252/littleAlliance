@@ -12,9 +12,13 @@ function LoginPage({ onSignIn }) {
   async function handleSubmit(e) {
     e.preventDefault();
     const data = await login({ email, password });
-    if (data.token) {
+    console.log("Login response:", data);
+    if (data.token && data.user) {
+      const userWithToken = { ...data.user, token: data.token };
+      localStorage.setItem("user", JSON.stringify(userWithToken));
       localStorage.setItem("token", data.token);
-      onSignIn({ email: data.email, name: data.name, isAdmin: data.isAdmin, token: data.token });
+      onSignIn(userWithToken);
+      console.log("User after login:", userWithToken);
       navigate("/");
     } else {
       setError(data.message || "Login failed");
